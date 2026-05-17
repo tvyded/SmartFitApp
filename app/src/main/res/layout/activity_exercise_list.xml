@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvWorkoutTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Выберите упражнение"
+            android:textColor="@color/text_main"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"
+            android:alpha="0"/>
+
+        <!-- Приседания -->
+        <LinearLayout
+            android:id="@+id/cardSquats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp"
+            android:alpha="0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Приседания"
+                android:textColor="@color/text_main"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 подхода по 12 повторений"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Махи плечами -->
+        <LinearLayout
+            android:id="@+id/cardShoulders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp"
+            android:alpha="0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Махи плечами"
+                android:textColor="@color/text_main"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Подъём рук через стороны до уровня плеч"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Бицепс -->
+        <LinearLayout
+            android:id="@+id/cardBiceps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp"
+            android:alpha="0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Бицепс"
+                android:textColor="@color/text_main"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Подъем штанги или гантелей"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Кнопка завершения тренировки -->
+        <Button
+            android:id="@+id/btnFinishWorkout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/button_bg"
+            android:text="Завершить тренировку"
+            android:textAllCaps="false"
+            android:textColor="@color/text_main" />
+    </LinearLayout>
+</ScrollView>
