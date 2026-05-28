@@ -29,14 +29,12 @@ public class ExerciseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
 
-        // Инициализируем БД и принимаем данные из Intent
         db = new DatabaseHelper(this);
         workoutId = getIntent().getLongExtra("WORKOUT_ID", -1);
         exerciseType = getIntent().getStringExtra("EXERCISE_TYPE");
 
         webView = findViewById(R.id.webViewExercise);
 
-        // Запрашиваем разрешение на уровне операционной системы Android
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
@@ -47,13 +45,12 @@ public class ExerciseActivity extends AppCompatActivity {
 
     private void startWebViewTrain() {
         WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true); // Разрешаем JS для работы MediaPipe
-        webSettings.setDomStorageEnabled(true);  // Включаем DOM-хранилище
-        webSettings.setMediaPlaybackRequiresUserGesture(false); // Автозапуск видео-стрима
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         webView.setWebViewClient(new WebViewClient());
 
-        // Предоставляем WebView доступ к аппаратной камере телефона
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
@@ -61,27 +58,23 @@ public class ExerciseActivity extends AppCompatActivity {
             }
         });
 
-        // Создаем мост для связи JavaScript -> Java под именем AndroidBridge
         webView.addJavascriptInterface(new WebAppInterface(), "AndroidBridge");
 
-        // Загружаем HTML файл из папки assets
         webView.loadUrl("file:///android_asset/index.html?type=" + exerciseType);
     }
 
-    // Класс-мост, методы которого можно вызывать из JavaScript внутри index.html
+
     public class WebAppInterface {
 
         @JavascriptInterface
         public void saveCapturedSet(final int reps) {
             runOnUiThread(() -> {
                 if (workoutId != -1 && exerciseType != null) {
-                    // Сохраняем данные в таблицу sets через твой DatabaseHelper
                     db.saveSet(workoutId, exerciseType, reps);
 
                     Toast.makeText(ExerciseActivity.this,
                             "Подход сохранен: " + reps + " повт.", Toast.LENGTH_SHORT).show();
 
-                    // Закрываем камеру и возвращаемся к списку упражнений
                     finish();
                 } else {
                     Toast.makeText(ExerciseActivity.this,
@@ -102,5 +95,19 @@ public class ExerciseActivity extends AppCompatActivity {
                 finish();
             }
         }
+    }
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            webView.loadUrl("about:blank");
+
+            webView.onPause();
+            webView.removeAllViews();
+
+
+            webView.destroy();
+            webView = null;
+        }
+        super.onDestroy();
     }
 }

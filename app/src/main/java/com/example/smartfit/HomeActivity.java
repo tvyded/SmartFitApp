@@ -20,7 +20,6 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Тренировки → список истории + кнопка новая тренировка
         findViewById(R.id.btnWorkouts).setOnClickListener(v -> {
             Intent intent = new Intent(this, TrainingHistoryActivity.class);
             intent.putExtra("USER_NAME", user);

@@ -11,14 +11,11 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Получаем имя из Intent
         String user = getIntent().getStringExtra("USER_NAME");
         ((TextView)findViewById(R.id.tvProfileName)).setText(user);
 
-        // Кнопка Назад
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        // Кнопка Выход (возврат на главный экран)
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

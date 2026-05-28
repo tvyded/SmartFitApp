@@ -66,7 +66,6 @@ public class TrainingHistoryActivity extends AppCompatActivity {
             tvDate.setText("📅 " + date);
             tvSummary.setText(exCount + " упражнений, " + totalReps + " повт.");
 
-            // Вместо перехода показываем краткую информацию
             item.setOnClickListener(v -> {
                 Toast.makeText(TrainingHistoryActivity.this,
                         "Тренировка от " + date + "\n" + exCount + " упр., " + totalReps + " повт.",

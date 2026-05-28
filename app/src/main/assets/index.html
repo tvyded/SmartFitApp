@@ -25,7 +25,6 @@
             flex-direction: column;
         }
 
-        /* Главная рабочая зона */
         .mirror-container {
             flex: 1;
             position: relative;
@@ -36,30 +35,27 @@
             width: 100vw;
         }
 
-        /* Видео и графика накладываются друг на друга и растягиваются */
         video, canvas {
             position: absolute;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Зеркальный разворот, чтобы движения совпадали с отражением */
             transform: scaleX(-1);
         }
 
-        /* Кнопка «Завершить подход» — закреплена в верхнем правом углу, чтобы ничего не перекрывать */
         #finishSetBtn {
             position: absolute;
             top: 25px;
             right: 25px;
             padding: 14px 28px;
-            background-color: #FF3366; /* Кораллово-красный цвет для контраста */
+            background-color: #FF3366;
             color: white;
             font-weight: bold;
             border: none;
             border-radius: 10px;
             font-size: 16px;
             box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
-            z-index: 9999; /* Поверх всех элементов */
+            z-index: 9999;
             cursor: pointer;
             transition: transform 0.1s ease, background-color 0.2s ease;
         }
@@ -69,20 +65,18 @@
             background-color: #e02855;
         }
 
-        /* Графический интерфейс поверх видеопотока */
         .overlay-ui {
             position: absolute;
             top: 25px;
             left: 25px;
             bottom: 35px;
-            pointer-events: none; /* Чтобы интерфейс не мешал кликам */
+            pointer-events: none;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             z-index: 5;
         }
 
-        /* Карточка с повторениями */
         .stats-box {
             background: rgba(0, 0, 0, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -107,7 +101,6 @@
             line-height: 1;
         }
 
-        /* Текстовые подсказки ИИ внизу экрана */
         .status-toast {
             background: rgba(0, 255, 102, 0.12);
             border: 2px solid #00ff66;
@@ -131,11 +124,13 @@
             text-shadow: 0 0 5px rgba(255, 0, 51, 0.5);
         }
 
-        /* Экрана загрузки ИИ */
         #loading {
             position: absolute;
             background: #0a0a0a;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -144,7 +139,8 @@
         }
 
         .spinner {
-            width: 50px; height: 50px;
+            width: 50px;
+            height: 50px;
             border: 5px solid #222;
             border-top: 5px solid #00ff66;
             border-radius: 50%;
@@ -153,8 +149,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -192,36 +193,31 @@
     const exerciseNameTitle = document.getElementById('exerciseNameTitle');
     const loadingScreen = document.getElementById('loading');
 
-    // Получаем тип упражнения из GET-параметров URL, переданных из Java
-    // (например: file:///android_asset/index.html?type=squat)
     const urlParams = new URLSearchParams(window.location.search);
     let currentExercise = urlParams.get('type') || 'squat';
 
-    // Переменные логики ИИ-тренера
     let repsCount = 0;
-    let stage = "DOWN"; // Фаза движения ("UP" или "DOWN")
+    let stage = 'DOWN';
 
-    // Красиво переименовываем плашку в зависимости от упражнения
-    if (currentExercise === "squat") exerciseNameTitle.innerText = "Приседания";
-    if (currentExercise === "biceps") exerciseNameTitle.innerText = "Подъем на бицепс";
-    if (currentExercise === "shoulders") exerciseNameTitle.innerText = "Махи плечами";
+    if (currentExercise === 'squat') exerciseNameTitle.innerText = 'Приседания';
+    if (currentExercise === 'biceps') exerciseNameTitle.innerText = 'Подъем на бицепс';
+    if (currentExercise === 'shoulders') exerciseNameTitle.innerText = 'Махи плечами';
 
-    // Математическая функция расчета угла между 3 точками (суставами)
     function calculateAngle(p1, p2, p3) {
         let radians = Math.atan2(p3.y - p2.y, p3.x - p2.x) - Math.atan2(p1.y - p2.y, p1.x - p2.x);
         let angle = Math.abs(radians * 180.0 / Math.PI);
+
         if (angle > 180.0) {
             angle = 360.0 - angle;
         }
+
         return angle;
     }
 
-    // Обработчик ИИ-анализа углов анатомического скелета
     function analyzePose(landmarks) {
         statusMessage.classList.remove('error-mode');
 
-        if (currentExercise === "squat") {
-            // Приседания: бедро (23), колено (25), лодыжка (27)
+        if (currentExercise === 'squat') {
             const hip = landmarks[23];
             const knee = landmarks[25];
             const ankle = landmarks[27];
@@ -229,21 +225,21 @@
             const kneeAngle = calculateAngle(hip, knee, ankle);
 
             if (kneeAngle < 100) {
-                stage = "UP";
-                statusMessage.innerText = "Отлично, вставай!";
-            }
-            if (kneeAngle > 160 && stage === "UP") {
-                repsCount++;
-                stage = "DOWN";
-                repCounter.innerText = repsCount;
-                statusMessage.innerText = "Засчитано!";
-            }
-            if (kneeAngle > 160 && stage === "DOWN") {
-                statusMessage.innerText = "Приседай глубже";
+                stage = 'UP';
+                statusMessage.innerText = 'Отлично, вставай!';
             }
 
-        } else if (currentExercise === "biceps") {
-            // Подъем на бицепс: плечо (11), локоть (13), запястье (15)
+            if (kneeAngle > 160 && stage === 'UP') {
+                repsCount++;
+                stage = 'DOWN';
+                repCounter.innerText = repsCount;
+                statusMessage.innerText = 'Засчитано!';
+            }
+
+            if (kneeAngle > 160 && stage === 'DOWN') {
+                statusMessage.innerText = 'Приседай глубже';
+            }
+        } else if (currentExercise === 'biceps') {
             const shoulder = landmarks[11];
             const elbow = landmarks[13];
             const wrist = landmarks[15];
@@ -251,21 +247,21 @@
             const elbowAngle = calculateAngle(shoulder, elbow, wrist);
 
             if (elbowAngle < 40) {
-                stage = "UP";
-                statusMessage.innerText = "Опускай плавно";
-            }
-            if (elbowAngle > 150 && stage === "UP") {
-                repsCount++;
-                stage = "DOWN";
-                repCounter.innerText = repsCount;
-                statusMessage.innerText = "Прекрасно!";
-            }
-            if (elbowAngle > 150 && stage === "DOWN") {
-                statusMessage.innerText = "Согни локоть полностью";
+                stage = 'UP';
+                statusMessage.innerText = 'Опускай плавно';
             }
 
-        } else if (currentExercise === "shoulders") {
-            // Махи в стороны: локоть (13), плечо (11), бедро (23)
+            if (elbowAngle > 150 && stage === 'UP') {
+                repsCount++;
+                stage = 'DOWN';
+                repCounter.innerText = repsCount;
+                statusMessage.innerText = 'Прекрасно!';
+            }
+
+            if (elbowAngle > 150 && stage === 'DOWN') {
+                statusMessage.innerText = 'Согни локоть полностью';
+            }
+        } else if (currentExercise === 'shoulders') {
             const elbow = landmarks[13];
             const shoulder = landmarks[11];
             const hip = landmarks[23];
@@ -273,42 +269,43 @@
             const lateralAngle = calculateAngle(elbow, shoulder, hip);
 
             if (lateralAngle > 80) {
-                stage = "UP";
-                statusMessage.innerText = "Хороший размах, опускай";
+                stage = 'UP';
+                statusMessage.innerText = 'Хороший размах, опускай';
             }
-            if (lateralAngle < 35 && stage === "UP") {
+
+            if (lateralAngle < 35 && stage === 'UP') {
                 repsCount++;
-                stage = "DOWN";
+                stage = 'DOWN';
                 repCounter.innerText = repsCount;
-                statusMessage.innerText = "Есть повтор!";
+                statusMessage.innerText = 'Есть повтор!';
             }
+
             if (lateralAngle > 115) {
                 statusMessage.classList.add('error-mode');
-                statusMessage.innerText = "⚠️ Не задирай руки выше плеч!";
+                statusMessage.innerText = '⚠️ Не задирай руки выше плеч!';
             }
         }
     }
 
-    // Визуальная отрисовка неонового скелета на Canvas
     function drawSkeleton(landmarks) {
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-        // Релевантные пары связей между суставами
         const connections = [
-            [11, 12], [11, 13], [13, 15], [12, 14], [14, 16], // Руки и плечи
-            [11, 23], [12, 24], [23, 24],                    // Торс
-            [23, 25], [24, 26], [25, 27], [26, 28]             // Ноги
+            [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],
+            [11, 23], [12, 24], [23, 24],
+            [23, 25], [24, 26], [25, 27], [26, 28]
         ];
 
         const w = canvasElement.width;
         const h = canvasElement.height;
 
-        // 1. Рисуем кости (Тонкие полупрозрачные белые линии)
-        canvasCtx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+        canvasCtx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
         canvasCtx.lineWidth = 4;
+
         connections.forEach(([startIdx, endIdx]) => {
             const start = landmarks[startIdx];
             const end = landmarks[endIdx];
+
             if (start && end && start.visibility > 0.5 && end.visibility > 0.5) {
                 canvasCtx.beginPath();
                 canvasCtx.moveTo(start.x * w, start.y * h);
@@ -317,27 +314,29 @@
             }
         });
 
-        // 2. Рисуем суставы (Яркие неоновые зеленые светящиеся точки)
-        canvasCtx.fillStyle = "#00ff66";
+        canvasCtx.fillStyle = '#00ff66';
+
         const activeLandmarks = [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28];
+
         activeLandmarks.forEach(idx => {
             const pt = landmarks[idx];
+
             if (pt && pt.visibility > 0.5) {
                 canvasCtx.beginPath();
                 canvasCtx.arc(pt.x * w, pt.y * h, 7, 0, 2 * Math.PI);
                 canvasCtx.fill();
 
-                canvasCtx.shadowColor = "#00ff66";
+                canvasCtx.shadowColor = '#00ff66';
                 canvasCtx.shadowBlur = 10;
             }
         });
-        canvasCtx.shadowBlur = 0; // Сбрасываем размытие теней для сохранения FPS
+
+        canvasCtx.shadowBlur = 0;
     }
 
-    // Функция обработки результатов кадра из нейросети MediaPipe
     function onPoseResults(results) {
         if (loadingScreen.style.display !== 'none') {
-            loadingScreen.style.display = 'none'; // Гасим экран загрузки при первом кадре
+            loadingScreen.style.display = 'none';
         }
 
         if (results.poseLandmarks) {
@@ -346,13 +345,12 @@
         }
     }
 
-    // Инициализация объекта MediaPipe Pose
     const pose = new Pose({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
     });
 
     pose.setOptions({
-        modelComplexity: 1, // Баланс скорости и точности
+        modelComplexity: 1,
         smoothLandmarks: true,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5
@@ -360,40 +358,31 @@
 
     pose.onResults(onPoseResults);
 
-    // Старт захвата камеры смартфона через утилиты MediaPipe Camera
     const camera = new Camera(videoElement, {
         onFrame: async () => {
             if (canvasElement.width !== videoElement.videoWidth) {
                 canvasElement.width = videoElement.videoWidth;
                 canvasElement.height = videoElement.videoHeight;
             }
+
             await pose.send({ image: videoElement });
         },
         width: 1280,
         height: 720
     });
 
-    camera.start().catch(err => {
-        alert("Камера заблокирована или используется в другом приложении!");
-        console.error(err);
+    camera.start().catch(() => {
+        alert('Камера заблокирована или используется в другом приложении!');
     });
 
-    // ─── ОТПРАВКА ДАННЫХ В JAVA ЧЕРЕЗ СКРИПТОВЫЙ МОСТ ───
     document.getElementById('finishSetBtn').addEventListener('click', () => {
         if (window.AndroidBridge) {
-            // Вызываем Java-метод из нашей ExerciseActivity.java и отдаем накопленные репсы
             window.AndroidBridge.saveCapturedSet(repsCount);
         } else {
-            alert("Данные тренировки:\nПовторений: " + repsCount + "\n(Тест вне приложения Android)");
+            alert(`Данные тренировки:\nПовторений: ${repsCount}\n(Тест вне приложения Android)`);
         }
     });
 </script>
-</body>git : Имя "git" не распознано как имя командлета, функции, файла сценария или выполняемой про
-граммы. Проверьте правильность написания имени, а также наличие и правильность пути, после че
-го повторите попытку.
-строка:1 знак:1
-+ git config --global user.email "tvyded@gmail.com"
-+ ~~~
-+ CategoryInfo          : ObjectNotFound: (git:String) [], CommandNotFoundException
-+ FullyQualifiedErrorId : CommandNotFoundException
+</body>
 </html>
+

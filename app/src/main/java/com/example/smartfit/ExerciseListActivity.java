@@ -47,8 +47,8 @@ public class ExerciseListActivity extends AppCompatActivity {
 
     private void startExercise(String exercise) {
         Intent intent = new Intent(this, ExerciseActivity.class);
-        intent.putExtra("WORKOUT_ID", workoutId); // ПЕРЕДАЕМ ID ТРЕНИРОВКИ
-        intent.putExtra("EXERCISE_TYPE", exercise); // Передаем тип ("squat", "shoulders", "biceps")
+        intent.putExtra("WORKOUT_ID", workoutId);
+        intent.putExtra("EXERCISE_TYPE", exercise);
         intent.putExtra("USER_NAME", currentUser);
         startActivity(intent);
     }

@@ -29,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
-            // Добавляем новые таблицы, не трогая users
+
             db.execSQL("CREATE TABLE IF NOT EXISTS workouts(" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "user TEXT, start_date TEXT, status TEXT)");
